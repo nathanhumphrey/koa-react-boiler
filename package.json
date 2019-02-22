@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "altdev": "npm run open && nodemon --exec babel-node index.js",
-    "dev": "npm run open && babel-node index.js",
-    "build": "webpack --mode production",
     "open": "npx opn http://localhost:3000",
-    "start": "npm run build && npm run open && node index.js"
+    "dev": "npm run open && nodemon --exec babel-node index.js",
+    "webpack": "webpack --mode=production",
+    "app": "npx babel ./app -d ./dist/app",
+    "server": "npx babel ./server -d ./dist/server",
+    "runner": "npx babel ./index.js -o ./dist/index.js",
+    "build": "npm run webpack && npm run app && npm run server && npm run runner",
+    "start": "npm run build && npm run open && node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
