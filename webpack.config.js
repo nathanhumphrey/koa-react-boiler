@@ -2,7 +2,6 @@
 const dotenv = require('dotenv');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 dotenv.config();
 const { NODE_ENV } = process.env;
@@ -17,9 +16,13 @@ module.exports = {
     extensions: ['*', '.js', '.jsx']
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'static'),
     publicPath: '/',
     filename: '[name].js'
+  },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM'
   },
   module: {
     rules: [
@@ -42,7 +45,6 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin({
       filename: 'styles.min.css'
-    }),
-    new CleanWebpackPlugin(['dist'])
+    })
   ]
 };

@@ -3,4 +3,5 @@ import ReactDOM from 'react-dom';
 
 import App from '../app/App';
 
-ReactDOM.hydrate(<App />, document.getElementById('app'));
+let el = document.getElementById('app');
+if (el) ReactDOM.hydrate(<App />, el);

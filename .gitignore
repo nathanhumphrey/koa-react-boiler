@@ -127,4 +127,5 @@ typings/
 
 # Application
 #Distribution directory
-dist/
+static/main.js
+static/styles.min.css

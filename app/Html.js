@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 const Html = ({
   children,
-  script = 'main.js',
-  style = 'styles.min.css',
-  title = 'Koa React Boilerplate'
+  script = '/main.js',
+  style = '/styles.min.css',
+  title = 'Koa React Boilerplate - Rendered'
 }) => {
   return (
     <html lang="en">
@@ -18,6 +18,14 @@ const Html = ({
       </head>
       <body>
         <div id="app">{children}</div>
+        <script
+          crossOrigin="true"
+          src="https://unpkg.com/react@16/umd/react.production.min.js"
+        />
+        <script
+          crossOrigin="true"
+          src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"
+        />
         <script src={script} />
       </body>
     </html>
