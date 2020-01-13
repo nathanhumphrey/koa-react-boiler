@@ -2,6 +2,7 @@
 const dotenv = require('dotenv');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 
 dotenv.config();
 const { NODE_ENV } = process.env;
@@ -13,6 +14,9 @@ module.exports = {
     main: ['./client/index.js']
   },
   resolve: {
+    alias: {
+      'react-dom': '@hot-loader/react-dom'
+    },
     extensions: ['*', '.js', '.jsx']
   },
   output: {
@@ -24,25 +28,41 @@ module.exports = {
     react: 'React',
     'react-dom': 'ReactDOM'
   },
+  devtool:
+    NODE_ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(m?js|jsx)$/,
         exclude: /node_modules/,
         use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
       },
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'postcss-loader',
-          'clean-css-loader'
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: { hmr: NODE_ENV !== 'production' }
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true
+            }
+          }
         ]
       }
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: 'styles.min.css'
     })

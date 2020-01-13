@@ -1,15 +1,14 @@
 import React from 'react';
+import { hot } from 'react-hot-loader/root';
 import Hello from './components/Hello';
 import './app.css';
 
-class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <Hello hello={'Hello, Koa React App!'} />
-      </div>
-    );
-  }
-}
+const App = () => {
+  return (
+    <div>
+      <Hello hello={'Hello, from the Koa React App!'} />
+    </div>
+  );
+};
 
-export default App;
+export default hot(App);

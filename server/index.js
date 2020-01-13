@@ -9,10 +9,12 @@ dotenv.config();
 const app = new Koa();
 
 if (process.env.NODE_ENV === 'development') {
+  console.log(process.env.NODE_ENV);
   koaWebpack().then(middleware => {
     app.use(middleware).use(renderReactApp);
   });
 } else {
+  console.log(process.env.NODE_ENV);
   const router = new Router();
   router.get('/app', renderReactApp);
   app
