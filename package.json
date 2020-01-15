@@ -5,68 +5,58 @@
   "main": "index.js",
   "scripts": {
     "open": "npx open http://localhost:3000",
-    "dev": "npm run open && node --require @babel/register index.js",
-    "build": "webpack --mode production",
-    "start": "node --require @babel/register index.js"
+    "dev": "npm run open && NODE_ENV=\"development\" node index.js",
+    "client": "webpack --config-name prod && mv static/js.html server/js.js && mv static/css.html server/css.js",
+    "build": "npm run client",
+    "start": "NODE_ENV=\"production\" node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@babel/preset-env": "^7.8.0",
+    "@babel/register": "^7.8.0",
     "@hot-loader/react-dom": "^16.11.0",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "isomorphic-fetch": "^2.2.1",
     "koa": "^2.11.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "koa-webpack": "^5.2.4",
-    "react-hot-loader": "^4.12.18"
+    "nodemon": "^2.0.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-hot-loader": "^4.12.18",
+    "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.0",
     "@babel/core": "^7.8.0",
     "@babel/node": "^7.8.0",
-    "@babel/preset-env": "^7.8.0",
     "@babel/preset-react": "^7.8.0",
-    "@babel/register": "^7.8.0",
     "autoprefixer": "^9.7.3",
     "babel-loader": "^8.0.6",
     "babel-plugin-css-modules-transform": "^1.6.2",
     "clean-css-loader": "^2.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.4.2",
-    "dotenv": "^8.2.0",
+    "cssnano": "^4.1.10",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-loader": "^3.0.3",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.17.0",
+    "file-loader": "^5.0.2",
+    "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.9.0",
-    "nodemon": "^2.0.2",
     "open": "^7.0.0",
     "open-cli": "^5.0.0",
     "postcss-loader": "3.0.0",
+    "postcss-preset-env": "^6.7.0",
     "prettier": "^1.19.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react"
-    ],
-    "plugins": [
-      [
-        "css-modules-transform",
-        {
-          "extensions": [
-            ".css",
-            ".scss"
-          ]
-        }
-      ]
-    ]
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2"
   }
 }

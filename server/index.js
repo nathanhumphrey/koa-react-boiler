@@ -1,3 +1,4 @@
+import 'isomorphic-fetch';
 import dotenv from 'dotenv';
 import Koa from 'koa';
 import Router from 'koa-router';
@@ -6,15 +7,18 @@ import renderReactApp from './render-react-app';
 
 dotenv.config();
 
+const { PORT = 3000 } = process.env;
+
 const app = new Koa();
 
 if (process.env.NODE_ENV === 'development') {
-  console.log(process.env.NODE_ENV);
-  koaWebpack().then(middleware => {
+  const webpack = require('webpack');
+  const config = require('../webpack.config.js')[1]; // webpack name:dev config object
+  const compiler = webpack(config);
+  koaWebpack({ compiler }).then(middleware => {
     app.use(middleware).use(renderReactApp);
   });
 } else {
-  console.log(process.env.NODE_ENV);
   const router = new Router();
   router.get('/app', renderReactApp);
   app
@@ -23,4 +27,6 @@ if (process.env.NODE_ENV === 'development') {
     .use(require('koa-static')('static')); // ensure static assets are accessible in production
 }
 
-export default app;
+app.listen(PORT, () => {
+  console.log(`🚀 Listening on port ${PORT}`);
+});

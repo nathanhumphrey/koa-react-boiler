@@ -22,9 +22,10 @@ module.exports = {
     browser: true
   },
   plugins: ['react', 'prettier'],
+  ignorePatterns: ['js.js', 'css.js', 'dist/'], // build directory for server files
   rules: {
     indent: ['error', 2],
-    'linebreak-style': ['error', 'windows'],
+    'linebreak-style': ['warn', 'windows'],
     quotes: ['warn', 'single'],
     semi: ['error', 'always'],
     'prettier/prettier': 'error',

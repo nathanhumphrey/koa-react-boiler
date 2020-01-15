@@ -2,11 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
-Boilerplate to get up and running quickly with Koa and React.
+SSR Exploration Project - Boilerplate to get up and running quickly with Koa and React.
 
 ## Limitations
 
-Note, this project is not production ready. At this time, the project provides only basic support for server-side rendering and development of a React application served via Koa. Future plans include (but are not limited to):
+Note, this project is not intended to be used in production. It was developed as an exploratory exercise for implementing SSR via Koa and React. At this time, the project provides only basic support for server-side rendering and development of a React application served via Koa. Future plans include (but are not limited to):
 
 - Session support
 - Datastore support

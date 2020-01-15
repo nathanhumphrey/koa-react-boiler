@@ -6,7 +6,7 @@ import './app.css';
 const App = () => {
   return (
     <div>
-      <Hello hello={'Hello, from the Koa React App!'} />
+      <Hello hello={'the Koa React App!'} />
     </div>
   );
 };
