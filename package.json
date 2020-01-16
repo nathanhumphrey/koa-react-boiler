@@ -1,17 +1,21 @@
 {
   "name": "koa-react-boiler",
   "version": "1.0.0",
-  "description": "",
+  "description": "An experimental SSR application using React and Koa",
   "main": "index.js",
   "scripts": {
     "open": "npx open http://localhost:3000",
-    "dev": "npm run open && NODE_ENV=\"development\" node index.js",
-    "client": "webpack --config-name prod && mv static/js.html server/js.js && mv static/css.html server/css.js",
-    "build": "npm run client",
+    "client": "webpack --config-name dev",
+    "server": "webpack --config-name dev --config webpack.server.config.js",
+    "client:prod": "webpack --config-name prod && mv static/js.html ./src/server/js.js && mv static/css.html ./src/server/css.js",
+    "server:prod": "webpack --config-name prod --config webpack.server.config.js",
+    "dev": "npm run server && npm run open && NODE_ENV=\"development\" node index.js",
+    "build": "npm run server:prod && npm run client:prod",
+    "build:start": "npm run build && NODE_ENV=\"production\" node index.js",
     "start": "NODE_ENV=\"production\" node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Nathan Humphrey",
   "license": "MIT",
   "dependencies": {
     "@babel/preset-env": "^7.8.0",

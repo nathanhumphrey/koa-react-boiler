@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/app/components/hello.css","webpack:///./src/app/app.css"],"names":[],"mappings":"AAAA,EACE,iBACF,C;ACFA,KACE,UAAW,CACX,qDACF,C","file":"styles.7515960ea66a90fb488b.css","sourcesContent":["p {\n  font-style: italic;\n}\n","body {\n  color: #666;\n  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n}\n"],"sourceRoot":""}

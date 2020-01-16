@@ -1,13 +1,14 @@
 // webpack v4
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const nodeExternals = require('webpack-node-externals');
 
-const config = {
+let config = {
   target: 'node',
   externals: [nodeExternals()],
-  entry: './index.js',
+  entry: {
+    main: ['./src/server/index.js']
+  },
   resolve: {
     alias: {
       'react-dom': '@hot-loader/react-dom'
@@ -15,15 +16,10 @@ const config = {
     extensions: ['*', '.js', '.jsx']
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'server'),
     // publicPath: '/',
     filename: 'index.js'
   },
-  // externals: {
-  //   react: 'React',
-  //   'react-dom': 'ReactDOM'
-  // },
-  // devtool: 'source-map',
   module: {
     rules: [
       {
@@ -34,27 +30,13 @@ const config = {
       {
         test: /\.css$/,
         use: [
-          // {
-          //   loader: MiniCssExtractPlugin.loader,
-          //   options: { hmr: false }
-          // },
           {
             loader: 'css-loader',
             options: {
               importLoaders: 1,
-              sourceMap: true
+              sourceMap: false
             }
-          } //,
-          // {
-          //   loader: 'postcss-loader',
-          //   options: {
-          //     plugins: [
-          //       require('postcss-preset-env')(),
-          //       require('cssnano')()
-          //     ],
-          //     sourceMap: true
-          //   }
-          // }
+          }
         ]
       },
       {
@@ -63,19 +45,14 @@ const config = {
       }
     ]
   },
-  plugins: [
-    // new MiniCssExtractPlugin({
-    //   filename: 'styles.css'
-    // }),
-    new CleanWebpackPlugin()
-  ]
+  plugins: [new CleanWebpackPlugin()]
 };
 
-let prod = Object.create(config);
+let prod = Object.assign({}, config);
 prod.mode = 'production';
 prod.name = 'prod';
 
-let dev = Object.create(config);
+let dev = Object.assign({}, config);
 dev.mode = 'development';
 dev.name = 'dev';
 
