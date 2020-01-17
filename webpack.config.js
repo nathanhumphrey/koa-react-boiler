@@ -1,167 +1,350 @@
 // webpack v4
 const path = require('path');
+const dotenv = require('dotenv');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 
-const production = {
-  name: 'prod',
-  mode: 'production',
-  target: 'web',
-  entry: {
-    main: ['./src/client/index.js']
-  },
-  resolve: {
-    alias: {
-      'react-dom': '@hot-loader/react-dom'
+// default to production
+const { NODE_ENV = 'production' } = dotenv.config();
+
+module.exports = function(env, argv) {
+  // determine desired mode
+  let mode = NODE_ENV;
+
+  // check for command line mode arg and use if present
+  mode = argv.mode ? argv.mode : mode;
+  const PRODUCTION = mode === 'production' ? true : false;
+
+  let config = {
+    name: PRODUCTION ? 'prod' : 'dev',
+    mode: PRODUCTION ? 'production' : 'development',
+    target: 'web',
+    entry: {
+      main: ['./src/client/index.js']
     },
-    extensions: ['*', '.js', '.jsx']
-  },
-  output: {
-    path: path.resolve(__dirname, 'static'),
-    publicPath: '/',
-    filename: '[name].[hash].js'
-  },
-  externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM'
-  },
-  devtool: 'source-map',
-  // optimization: {
-  //   splitChunks: {
-  //     cacheGroups: {
-  //       styles: {
-  //         name: 'styles',
-  //         test: /\.css$/,
-  //         chunks: 'all',
-  //         enforce: true
-  //       }
-  //     }
-  //   }
-  // },
-  module: {
-    rules: [
-      {
-        test: /\.(m?js|jsx)$/,
-        exclude: /node_modules/,
-        use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
+    resolve: {
+      alias: {
+        'react-dom': '@hot-loader/react-dom'
       },
-      {
-        test: /\.css$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: { hmr: false }
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-              sourceMap: true
+      extensions: ['*', '.js', '.jsx']
+    },
+    output: {
+      path: path.resolve(__dirname, 'static'),
+      publicPath: '/',
+      filename: PRODUCTION ? '[name].[hash].js' : '[name].js'
+    },
+    externals: {
+      react: 'React',
+      'react-dom': 'ReactDOM'
+    },
+    devtool: 'source-map',
+    // optimization: {
+    //   splitChunks: {
+    //     cacheGroups: {
+    //       styles: {
+    //         name: 'styles',
+    //         test: /\.css$/,
+    //         chunks: 'all',
+    //         enforce: true
+    //       }
+    //     }
+    //   }
+    // },
+    module: {
+      rules: [
+        {
+          test: /\.(m?js|jsx)$/,
+          exclude: /node_modules/,
+          use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
+        },
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: { hmr: !PRODUCTION }
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+                sourceMap: true
+              }
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                plugins: [
+                  require('postcss-preset-env')(),
+                  require('cssnano')()
+                ],
+                sourceMap: true
+              }
             }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: [require('postcss-preset-env')(), require('cssnano')()],
-              sourceMap: true
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: ['file-loader']
-      }
+          ]
+        },
+        {
+          test: /\.(png|svg|jpg|gif)$/,
+          use: ['file-loader']
+        }
+      ]
+    },
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: PRODUCTION ? 'styles.[contenthash].css' : 'styles.css',
+        chunkFilename: PRODUCTION ? '[id].[contenthash].css' : '[id].css'
+      })
     ]
-  },
-  plugins: [
-    // hacked HtmlWebPackPlugin to create a SSR template for koa, see package.json build script
-    new HtmlWebPackPlugin({
-      inject: false,
-      hash: false,
-      template: 'src/templates/css.html',
-      filename: 'css.html'
-    }),
-    new HtmlWebPackPlugin({
-      inject: false,
-      hash: false,
-      template: 'src/templates/js.html',
-      filename: 'js.html'
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'styles.[contenthash].css',
-      chunkFilename: '[id].[contenthash].css'
-    }),
-    new CleanWebpackPlugin()
-  ]
+  };
+
+  if (PRODUCTION)
+    config.plugins.push(
+      new CleanWebpackPlugin(),
+      new HtmlWebPackPlugin({
+        inject: false,
+        hash: false,
+        template: 'src/templates/css.html',
+        filename: 'css.html'
+      }),
+      new HtmlWebPackPlugin({
+        inject: false,
+        hash: false,
+        template: 'src/templates/js.html',
+        filename: 'js.html'
+      })
+    );
+
+  return config;
 };
 
-const development = {
-  name: 'dev',
-  mode: 'development',
-  target: 'web',
-  entry: {
-    main: ['./src/client/index.js']
-  },
-  resolve: {
-    alias: {
-      'react-dom': '@hot-loader/react-dom'
-    },
-    extensions: ['*', '.js', '.jsx']
-  },
-  output: {
-    path: path.resolve(__dirname, 'static'),
-    publicPath: '/',
-    filename: '[name].js'
-  },
-  externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM'
-  },
-  devtool: 'cheap-module-eval-source-map',
-  module: {
-    rules: [
-      {
-        test: /\.(m?js|jsx)$/,
-        exclude: /node_modules/,
-        use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
-      },
-      {
-        test: /\.css$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: { hmr: true }
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-              sourceMap: true
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: [require('postcss-preset-env')(), require('cssnano')()],
-              sourceMap: true
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: ['file-loader']
-      }
-    ]
-  },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: 'styles.css',
-      chunkFilename: '[id].css'
-    })
-  ]
-};
+// const development = {
+//   name: 'dev',
+//   mode: 'development',
+//   target: 'web',
+//   entry: {
+//     main: ['./src/client/index.js']
+//   },
+//   resolve: {
+//     alias: {
+//       'react-dom': '@hot-loader/react-dom'
+//     },
+//     extensions: ['*', '.js', '.jsx']
+//   },
+//   output: {
+//     path: path.resolve(__dirname, 'static'),
+//     publicPath: '/',
+//     filename: '[name].js'
+//   },
+//   externals: {
+//     react: 'React',
+//     'react-dom': 'ReactDOM'
+//   },
+//   devtool: 'cheap-module-eval-source-map',
+//   module: {
+//     rules: [
+//       {
+//         test: /\.(m?js|jsx)$/,
+//         exclude: /node_modules/,
+//         use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
+//       },
+//       {
+//         test: /\.css$/,
+//         use: [
+//           {
+//             loader: MiniCssExtractPlugin.loader,
+//             options: { hmr: true }
+//           },
+//           {
+//             loader: 'css-loader',
+//             options: {
+//               importLoaders: 1,
+//               sourceMap: true
+//             }
+//           },
+//           {
+//             loader: 'postcss-loader',
+//             options: {
+//               plugins: [require('postcss-preset-env')(), require('cssnano')()],
+//               sourceMap: true
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         test: /\.(png|svg|jpg|gif)$/,
+//         use: ['file-loader']
+//       }
+//     ]
+//   },
+//   plugins: [
+//     new MiniCssExtractPlugin({
+//       filename: 'styles.css',
+//       chunkFilename: '[id].css'
+//     })
+//   ]
+// };
 
-module.exports = [production, development];
+// module.exports = [production, development];
+
+// const production = {
+//   name: 'prod',
+//   mode: 'production',
+//   target: 'web',
+//   entry: {
+//     main: ['./src/client/index.js']
+//   },
+//   resolve: {
+//     alias: {
+//       'react-dom': '@hot-loader/react-dom'
+//     },
+//     extensions: ['*', '.js', '.jsx']
+//   },
+//   output: {
+//     path: path.resolve(__dirname, 'static'),
+//     publicPath: '/',
+//     filename: '[name].[hash].js'
+//   },
+//   externals: {
+//     react: 'React',
+//     'react-dom': 'ReactDOM'
+//   },
+//   devtool: 'source-map',
+//   // optimization: {
+//   //   splitChunks: {
+//   //     cacheGroups: {
+//   //       styles: {
+//   //         name: 'styles',
+//   //         test: /\.css$/,
+//   //         chunks: 'all',
+//   //         enforce: true
+//   //       }
+//   //     }
+//   //   }
+//   // },
+//   module: {
+//     rules: [
+//       {
+//         test: /\.(m?js|jsx)$/,
+//         exclude: /node_modules/,
+//         use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
+//       },
+//       {
+//         test: /\.css$/,
+//         use: [
+//           {
+//             loader: MiniCssExtractPlugin.loader,
+//             options: { hmr: false }
+//           },
+//           {
+//             loader: 'css-loader',
+//             options: {
+//               importLoaders: 1,
+//               sourceMap: true
+//             }
+//           },
+//           {
+//             loader: 'postcss-loader',
+//             options: {
+//               plugins: [require('postcss-preset-env')(), require('cssnano')()],
+//               sourceMap: true
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         test: /\.(png|svg|jpg|gif)$/,
+//         use: ['file-loader']
+//       }
+//     ]
+//   },
+//   plugins: [
+//     // hacked HtmlWebPackPlugin to create a SSR template for koa, see package.json client:prod script
+//     new HtmlWebPackPlugin({
+//       inject: false,
+//       hash: false,
+//       template: 'src/templates/css.html',
+//       filename: 'css.html'
+//     }),
+//     new HtmlWebPackPlugin({
+//       inject: false,
+//       hash: false,
+//       template: 'src/templates/js.html',
+//       filename: 'js.html'
+//     }),
+//     new MiniCssExtractPlugin({
+//       filename: 'styles.[contenthash].css',
+//       chunkFilename: '[id].[contenthash].css'
+//     }),
+//     new CleanWebpackPlugin()
+//   ]
+// };
+
+// const development = {
+//   name: 'dev',
+//   mode: 'development',
+//   target: 'web',
+//   entry: {
+//     main: ['./src/client/index.js']
+//   },
+//   resolve: {
+//     alias: {
+//       'react-dom': '@hot-loader/react-dom'
+//     },
+//     extensions: ['*', '.js', '.jsx']
+//   },
+//   output: {
+//     path: path.resolve(__dirname, 'static'),
+//     publicPath: '/',
+//     filename: '[name].js'
+//   },
+//   externals: {
+//     react: 'React',
+//     'react-dom': 'ReactDOM'
+//   },
+//   devtool: 'cheap-module-eval-source-map',
+//   module: {
+//     rules: [
+//       {
+//         test: /\.(m?js|jsx)$/,
+//         exclude: /node_modules/,
+//         use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
+//       },
+//       {
+//         test: /\.css$/,
+//         use: [
+//           {
+//             loader: MiniCssExtractPlugin.loader,
+//             options: { hmr: true }
+//           },
+//           {
+//             loader: 'css-loader',
+//             options: {
+//               importLoaders: 1,
+//               sourceMap: true
+//             }
+//           },
+//           {
+//             loader: 'postcss-loader',
+//             options: {
+//               plugins: [require('postcss-preset-env')(), require('cssnano')()],
+//               sourceMap: true
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         test: /\.(png|svg|jpg|gif)$/,
+//         use: ['file-loader']
+//       }
+//     ]
+//   },
+//   plugins: [
+//     new MiniCssExtractPlugin({
+//       filename: 'styles.css',
+//       chunkFilename: '[id].css'
+//     })
+//   ]
+// };
+
+// module.exports = [production, development];

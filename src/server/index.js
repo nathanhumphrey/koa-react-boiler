@@ -4,28 +4,32 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import koaWebpack from 'koa-webpack';
 import renderReactApp from './render-react-app.js';
+import { routes } from '../app/routes.js';
 
 dotenv.config();
-
 const { PORT = 3000 } = process.env;
 
 const app = new Koa();
 
-if (process.env.NODE_ENV === 'development') {
-  const webpack = require('webpack');
-  const config = require('../../webpack.config.js')[1]; // webpack name:dev config object
-  const compiler = webpack(config);
-  koaWebpack({ compiler }).then(middleware => {
-    app.use(middleware).use(renderReactApp);
-  });
-} else {
+if (process.env.NODE_ENV === 'production') {
   const router = new Router();
-  router.get('/about', renderReactApp);
-  router.get('/app', renderReactApp);
+  routes.map(route => {
+    router[route.method](route.path, renderReactApp);
+  });
   app
     .use(router.routes())
     .use(router.allowedMethods())
     .use(require('koa-static')('static')); // ensure static assets are accessible in production
+} else {
+  // development
+  const webpack = require('webpack');
+  const config = require('../../webpack.config.js')(process.env, {
+    mode: 'development'
+  });
+  const compiler = webpack(config);
+  koaWebpack({ compiler }).then(middleware => {
+    app.use(middleware).use(renderReactApp);
+  });
 }
 
 app.listen(PORT, () => {

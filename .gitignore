@@ -126,6 +126,6 @@ typings/
 # End of https://www.gitignore.io/api/node,macos,visualstudiocode
 
 # Application
-#Distribution directory
-static/main.js
-static/styles.min.css
+# Build Directories
+static/
+server/

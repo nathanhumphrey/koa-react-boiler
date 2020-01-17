@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import App from '../app/App';
+import App from '../app/App.js';
 import { js } from './js.js'; // get hashed name from webpack
 import { css } from './css.js'; // get hashed from webpack
 
@@ -55,21 +55,31 @@ Html.propTypes = {
   title: PropTypes.string
 };
 
+const context = {};
+
 export default ctx => {
-  const appComponent =
+  const renderComponent =
     NODE_ENV === 'production' ? (
       <Html script={js} style={css}>
-        <StaticRouter location={ctx.request.path}>
+        <StaticRouter location={ctx.request.path} context={context}>
           <App />
         </StaticRouter>
       </Html>
     ) : (
       <Html>
-        <StaticRouter location={ctx.request.path}>
+        <StaticRouter location={ctx.request.path} context={context}>
           <App />
         </StaticRouter>
       </Html>
     );
 
-  ctx.body = renderToString(<>{appComponent}</>);
+  const markup = renderToString(renderComponent);
+
+  if (context.url) {
+    // Somewhere a `<Redirect>` was rendered
+    ctx.redirect(301, context.url);
+  } else {
+    // we're good, send the response
+    ctx.body = markup;
+  }
 };

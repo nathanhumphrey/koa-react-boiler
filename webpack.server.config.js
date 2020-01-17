@@ -17,7 +17,6 @@ let config = {
   },
   output: {
     path: path.resolve(__dirname, 'server'),
-    // publicPath: '/',
     filename: 'index.js'
   },
   module: {

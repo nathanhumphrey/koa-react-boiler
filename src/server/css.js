@@ -1,1 +1,1 @@
-module.exports = { css: '/styles.7515960ea66a90fb488b.css' };
+module.exports = { css: '/styles.70a709f4d43011eb192a.css' };
