@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "description": "An experimental SSR application using React and Koa",
   "main": "index.js",
+  "repository": "github:nathanhumphrey/koa-react-boiler",
+  "private": true,
+  "engines": {
+    "node": ">= 10.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 11"
+  ],
   "scripts": {
     "open": "npx open http://localhost:3000",
     "client": "webpack --config-name dev",
@@ -10,12 +20,21 @@
     "client:prod": "webpack --config-name prod && mv static/js.html ./src/server/js.js && mv static/css.html ./src/server/css.js",
     "server:prod": "webpack --config-name prod --config webpack.server.config.js",
     "dev": "npm run server && npm run open && NODE_ENV=\"development\" node index.js",
-    "build": "npm run server:prod && npm run client:prod",
+    "build": "npm run client:prod && npm run server:prod",
     "build:start": "npm run build && NODE_ENV=\"production\" node index.js",
     "start": "NODE_ENV=\"production\" node index.js"
   },
-  "keywords": [],
-  "author": "Nathan Humphrey",
+  "keywords": [
+    "ssr",
+    "koa",
+    "react",
+    "isomorphic"
+  ],
+  "author": {
+    "name": "Nathan Humphrey",
+    "email": "nathpaulhump@gmail.com",
+    "url": "https://nathanhumphrey.ca"
+  },
   "license": "MIT",
   "dependencies": {
     "@babel/preset-env": "^7.8.0",

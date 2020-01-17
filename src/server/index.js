@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import Koa from 'koa';
 import Router from 'koa-router';
 import koaWebpack from 'koa-webpack';
-import renderReactApp from './render-react-app.js';
-import { routes } from '../app/routes.js';
+import renderReactApp from './render-react-app';
+import { routes } from '../app/routes';
 
 dotenv.config();
 const { PORT = 3000 } = process.env;
@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'production') {
   app
     .use(router.routes())
     .use(router.allowedMethods())
-    .use(require('koa-static')('static')); // ensure static assets are accessible in production
+    .use(require('koa-static')('static'));
 } else {
   // development
   const webpack = require('webpack');

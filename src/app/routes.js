@@ -10,16 +10,14 @@
  * - [loadData] - if initial data are required, provide method to fetch here
  */
 
-import { Index } from './pages/index';
-import { About } from './pages/about';
-import { Service } from './pages/service';
+import * as pages from './pages';
 
 const routes = [
   {
     title: 'Home',
     path: '/',
     method: 'get',
-    page: Index,
+    page: pages.Home,
     key: '/',
     exact: true,
     loadData: () => 'some data'
@@ -28,14 +26,14 @@ const routes = [
     title: 'About',
     path: '/about',
     method: 'get',
-    page: About,
+    page: pages.About,
     key: '/about'
   },
   {
     title: 'Service',
     path: '/service',
     method: 'get',
-    page: Service,
+    page: pages.Service,
     key: '/service'
   }
 ];

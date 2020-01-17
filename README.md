@@ -6,11 +6,10 @@ SSR Exploration Project - Boilerplate to get up and running quickly with Koa and
 
 ## Limitations
 
-Note, this project is not intended to be used in production. It was developed as an exploratory exercise for implementing SSR via Koa and React. At this time, the project provides only basic support for server-side rendering and development of a React application served via Koa. Future plans include (but are not limited to):
+Note, this project is not intended to be used in production. It was developed as an exploratory exercise for implementing SSR via Koa and React. At this time, the project provides only basic support for server-side rendering and development of a React application served via Koa (the original purpose of the project). Future plans to fortify the project include (but are not limited to):
 
-- Session support
-- Datastore support
-- Dynamic client-side routing
+- Routing ✓
+- SSR route initial data loading
 
 ## License
 

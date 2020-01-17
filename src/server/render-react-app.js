@@ -4,9 +4,9 @@ import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import App from '../app/App.js';
-import { js } from './js.js'; // get hashed name from webpack
-import { css } from './css.js'; // get hashed from webpack
+import App from '../app/App';
+import { js } from './js'; // get hashed name from webpack
+import { css } from './css'; // get hashed from webpack
 
 dotenv.config();
 const { NODE_ENV = 'development' } = process.env;
@@ -61,13 +61,13 @@ export default ctx => {
   const renderComponent =
     NODE_ENV === 'production' ? (
       <Html script={js} style={css}>
-        <StaticRouter location={ctx.request.path} context={context}>
+        <StaticRouter location={ctx.request.url} context={context}>
           <App />
         </StaticRouter>
       </Html>
     ) : (
       <Html>
-        <StaticRouter location={ctx.request.path} context={context}>
+        <StaticRouter location={ctx.request.url} context={context}>
           <App />
         </StaticRouter>
       </Html>
