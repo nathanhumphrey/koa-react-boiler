@@ -41,18 +41,6 @@ module.exports = function(env, argv) {
       'react-dom': 'ReactDOM'
     },
     devtool: 'source-map',
-    // optimization: {
-    //   splitChunks: {
-    //     cacheGroups: {
-    //       styles: {
-    //         name: 'styles',
-    //         test: /\.css$/,
-    //         chunks: 'all',
-    //         enforce: true
-    //       }
-    //     }
-    //   }
-    // },
     module: {
       rules: [
         {

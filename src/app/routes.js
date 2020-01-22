@@ -13,9 +13,12 @@
 
 import * as pages from './pages';
 
+const siteTitle = 'Koa React App - ';
+
 const routes = [
   {
-    title: 'Home',
+    title: `${siteTitle} Home`,
+    linkText: 'Home',
     path: '/',
     method: 'get',
     page: pages.Home,
@@ -25,7 +28,8 @@ const routes = [
     loadData: () => 'some data'
   },
   {
-    title: 'About',
+    title: `${siteTitle} About`,
+    linkText: 'About',
     path: '/about',
     method: 'get',
     page: pages.About,
@@ -33,15 +37,8 @@ const routes = [
     key: '/about'
   },
   {
-    title: 'Service',
-    path: '/service',
-    method: 'get',
-    page: pages.Service,
-    key: '/service',
-    nav: true
-  },
-  {
-    title: '404',
+    title: `${siteTitle} 404`,
+    linkText: '404',
     path: '*',
     method: 'get',
     page: pages.NoMatch,

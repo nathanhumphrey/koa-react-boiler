@@ -19,7 +19,8 @@ module.exports = {
   },
   env: {
     node: true,
-    browser: true
+    browser: true,
+    jest: true
   },
   plugins: ['react', 'prettier'],
   ignorePatterns: ['js.js', 'css.js', 'dist/'], // build directory for server files

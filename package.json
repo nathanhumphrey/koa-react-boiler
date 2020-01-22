@@ -14,6 +14,8 @@
     "not ie <= 11"
   ],
   "scripts": {
+    "test": "npx jest",
+    "test:v": "npx jest --verbose",
     "open": "npx open http://localhost:3000",
     "client": "webpack --config-name dev",
     "server": "webpack --config-name dev --config webpack.server.config.js",
@@ -21,8 +23,8 @@
     "server:prod": "webpack --config-name prod --config webpack.server.config.js",
     "dev": "npm run server && npm run open && NODE_ENV=\"development\" node index.js",
     "build": "npm run client:prod && npm run server:prod",
-    "build:start": "npm run build && NODE_ENV=\"production\" node index.js",
-    "start": "NODE_ENV=\"production\" node index.js"
+    "start": "npm run build && NODE_ENV=\"production\" node index.js",
+    "start:quick": "NODE_ENV=\"production\" node index.js"
   },
   "keywords": [
     "ssr",
@@ -58,13 +60,17 @@
     "@babel/core": "^7.8.0",
     "@babel/node": "^7.8.0",
     "@babel/preset-react": "^7.8.0",
+    "@types/react": "^16.9.18",
     "autoprefixer": "^9.7.3",
+    "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-css-modules-transform": "^1.6.2",
     "clean-css-loader": "^2.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.4.2",
     "cssnano": "^4.1.10",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-loader": "^3.0.3",
@@ -72,14 +78,23 @@
     "eslint-plugin-react": "^7.17.0",
     "file-loader": "^5.0.2",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^25.1.0",
     "mini-css-extract-plugin": "^0.9.0",
     "open": "^7.0.0",
     "open-cli": "^5.0.0",
+    "postcss": "^6.0.23",
     "postcss-loader": "3.0.0",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^1.19.1",
+    "react-test-renderer": "^16.12.0",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-node-externals": "^1.7.2"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testRegex": "\\.test\\.js"
   }
 }
