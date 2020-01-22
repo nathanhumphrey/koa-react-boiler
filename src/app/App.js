@@ -15,7 +15,7 @@ const App = () => {
             path={route.path}
             exact={route.exact ? true : false}
           >
-            {route.page}
+            <route.page />
           </Route>
         ))}
       </Switch>

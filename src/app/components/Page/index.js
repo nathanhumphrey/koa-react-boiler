@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Nav } from '../Nav';
 
-const Page = props => {
+const Page = ({ children }) => {
   return (
     <>
       <header>
         <Nav />
       </header>
-      <main>{props.children}</main>
+      <main>{children}</main>
     </>
   );
 };

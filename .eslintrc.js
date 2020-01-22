@@ -30,5 +30,8 @@ module.exports = {
     semi: ['error', 'always'],
     'prettier/prettier': 'error',
     'no-console': 'off'
+  },
+  globals: {
+    __PRODUCTION__: 'readonly'
   }
 };

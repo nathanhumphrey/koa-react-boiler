@@ -1,10 +1,17 @@
 // webpack v4
 const path = require('path');
+const dotenv = require('dotenv');
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const nodeExternals = require('webpack-node-externals');
+const webpack = require('webpack');
 
-let config = {
+// default to production
+dotenv.config();
+const { NODE_ENV } = process.env;
+
+module.exports = {
   target: 'node',
+  mode: NODE_ENV,
   externals: [nodeExternals()],
   entry: {
     main: ['./src/server/index.js']
@@ -44,15 +51,10 @@ let config = {
       }
     ]
   },
-  plugins: [new CleanWebpackPlugin()]
+  plugins: [
+    new CleanWebpackPlugin(),
+    new webpack.DefinePlugin({
+      __PRODUCTION__: JSON.stringify(NODE_ENV === 'production')
+    })
+  ]
 };
-
-let prod = Object.assign({}, config);
-prod.mode = 'production';
-prod.name = 'prod';
-
-let dev = Object.assign({}, config);
-dev.mode = 'development';
-dev.name = 'dev';
-
-module.exports = [prod, dev];

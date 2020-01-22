@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
@@ -8,27 +7,19 @@ import App from '../app/App';
 import { js } from './js'; // get hashed name from webpack
 import { css } from './css'; // get hashed from webpack
 
-dotenv.config();
-const { NODE_ENV = 'development' } = process.env;
-
 // prepare React CDN resource URLs
-const reactJs =
-  NODE_ENV === 'production'
-    ? 'https://unpkg.com/react@16/umd/react.production.min.js'
-    : 'https://unpkg.com/react@16/umd/react.development.js';
-
-const reactDomJs =
-  NODE_ENV === 'production'
-    ? 'https://unpkg.com/react-dom@16/umd/react-dom.production.min.js'
-    : 'https://unpkg.com/react-dom@16/umd/react-dom.development.js';
+let reactJs, reactDomJs;
+// webpack plugin __PRODUCTION__ for cleaner bundles
+if (__PRODUCTION__) {
+  reactJs = 'https://unpkg.com/react@16/umd/react.production.min.js';
+  reactDomJs = 'https://unpkg.com/react-dom@16/umd/react-dom.production.min.js';
+} else {
+  reactJs = 'https://unpkg.com/react@16/umd/react.development.js';
+  reactDomJs = 'https://unpkg.com/react-dom@16/umd/react-dom.development.js';
+}
 
 // component to manage the HTML document returned to browser
-const Html = ({
-  children,
-  script = '/main.js',
-  style = '/styles.css',
-  title = 'Koa React Boilerplate - Rendered'
-}) => {
+const Html = ({ children, script, style, title }) => {
   return (
     <html lang="en">
       <head>
@@ -55,23 +46,35 @@ Html.propTypes = {
   title: PropTypes.string
 };
 
+Html.defaultProps = {
+  script: '/main.js',
+  style: '/styles.css',
+  title: 'Koa React Boilerplate - Rendered'
+};
+
 const context = {};
 
 export default ctx => {
-  const renderComponent =
-    NODE_ENV === 'production' ? (
+  let renderComponent;
+
+  // webpack plugin __PRODUCTION__ for cleaner bundles
+  if (__PRODUCTION__) {
+    renderComponent = (
       <Html script={js} style={css}>
         <StaticRouter location={ctx.request.url} context={context}>
           <App />
         </StaticRouter>
       </Html>
-    ) : (
+    );
+  } else {
+    renderComponent = (
       <Html>
         <StaticRouter location={ctx.request.url} context={context}>
           <App />
         </StaticRouter>
       </Html>
     );
+  }
 
   const markup = renderToString(renderComponent);
 

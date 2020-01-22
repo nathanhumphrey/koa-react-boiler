@@ -1,4 +1,4 @@
-import 'isomorphic-fetch';
+//import 'isomorphic-fetch';
 import dotenv from 'dotenv';
 import Koa from 'koa';
 import Router from 'koa-router';
@@ -11,7 +11,8 @@ const { PORT = 3000 } = process.env;
 
 const app = new Koa();
 
-if (process.env.NODE_ENV === 'production') {
+// webpack plugin __PRODUCTION__ for cleaner bundles
+if (__PRODUCTION__) {
   const router = new Router();
   routes.map(route => {
     router[route.method](route.path, renderReactApp);
