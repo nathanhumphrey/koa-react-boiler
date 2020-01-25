@@ -1,109 +1,87 @@
 // webpack v4
 const path = require('path');
-const dotenv = require('dotenv');
+const LoadablePlugin = require('@loadable/webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
+const nodeExternals = require('webpack-node-externals');
 
-// default to production
-dotenv.config();
-const { NODE_ENV = 'production' } = process.env;
+const DIST_PATH = path.resolve(__dirname, 'public/dist');
 
-module.exports = function(env, argv) {
-  // determine desired mode
-  let mode = NODE_ENV;
+const production = process.env.NODE_ENV === 'production';
+const development =
+  !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
-  // check for command line mode arg and use if present
-  mode = argv.mode ? argv.mode : mode;
-  const PRODUCTION = mode === 'production' ? true : false;
-
-  let config = {
-    name: PRODUCTION ? 'prod' : 'dev',
-    mode: PRODUCTION ? 'production' : 'development',
-    target: 'web',
-    entry: {
-      main: ['./src/client/index.js']
+const getConfig = target => ({
+  name: target,
+  mode: development ? 'development' : 'production',
+  target,
+  entry: [`./src/client/index-${target}.js`],
+  resolve: {
+    alias: {
+      'react-dom': '@hot-loader/react-dom'
     },
-    resolve: {
-      alias: {
-        'react-dom': '@hot-loader/react-dom'
-      },
-      extensions: ['*', '.js', '.jsx']
-    },
-    output: {
-      path: path.resolve(__dirname, 'static'),
-      publicPath: '/',
-      filename: PRODUCTION ? '[name].[hash].js' : '[name].js'
-    },
-    externals: {
-      fetch: 'fetch',
-      react: 'React',
-      'react-dom': 'ReactDOM'
-    },
-    devtool: 'source-map',
-    module: {
-      rules: [
-        {
-          test: /\.(m?js|jsx)$/,
-          exclude: /node_modules/,
-          use: [{ loader: 'babel-loader' }, { loader: 'eslint-loader' }]
-        },
-        {
-          test: /\.css$/,
-          use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-              options: { hmr: !PRODUCTION }
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                importLoaders: 1,
-                sourceMap: true
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: [
-                  require('postcss-preset-env')(),
-                  require('cssnano')()
-                ],
-                sourceMap: true
-              }
+    extensions: ['*', '.js', '.jsx']
+  },
+  output: {
+    path: path.join(DIST_PATH, target),
+    filename: production ? '[name]-bundle-[chunkhash:8].js' : '[name].js',
+    publicPath: `/dist/${target}/`,
+    libraryTarget: target === 'node' ? 'commonjs2' : undefined
+  },
+  devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.(m?js|jsx)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              caller: { target }
             }
-          ]
-        },
-        {
-          test: /\.(png|svg|jpg|gif)$/,
-          use: ['file-loader']
-        }
-      ]
-    },
-    plugins: [
-      new MiniCssExtractPlugin({
-        filename: PRODUCTION ? 'styles.[contenthash].css' : 'styles.css',
-        chunkFilename: PRODUCTION ? '[id].[contenthash].css' : '[id].css'
-      })
+          },
+          { loader: 'eslint-loader' }
+        ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: { hmr: development }
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [require('postcss-preset-env')(), require('cssnano')()],
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ['file-loader']
+      }
     ]
-  };
+  },
+  plugins: [
+    new LoadablePlugin(),
+    new MiniCssExtractPlugin(),
+    new CleanWebpackPlugin()
+  ],
+  externals:
+    target === 'node'
+      ? ['@loadable/component', 'fetch', nodeExternals()]
+      : ['fetch', 'React', 'ReactDOM']
+});
 
-  if (PRODUCTION)
-    config.plugins.push(
-      new CleanWebpackPlugin(),
-      new HtmlWebPackPlugin({
-        inject: false,
-        hash: false,
-        template: 'src/templates/css.html',
-        filename: 'css.html'
-      }),
-      new HtmlWebPackPlugin({
-        inject: false,
-        hash: false,
-        template: 'src/templates/js.html',
-        filename: 'js.html'
-      })
-    );
-
-  return config;
-};
+module.exports = [getConfig('web'), getConfig('node')];

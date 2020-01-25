@@ -1,8 +1,10 @@
 //import 'isomorphic-fetch';
+import path from 'path';
 import dotenv from 'dotenv';
 import Koa from 'koa';
 import Router from 'koa-router';
 import koaWebpack from 'koa-webpack';
+import koaStatic from 'koa-static';
 import renderReactApp from './render-react-app';
 import { routes } from '../app/routes';
 
@@ -11,27 +13,55 @@ const { PORT = 3000 } = process.env;
 
 const app = new Koa();
 
-// webpack plugin __PRODUCTION__ for cleaner bundles
-if (__PRODUCTION__) {
-  const router = new Router();
-  routes.map(route => {
-    router[route.method](route.path, renderReactApp);
-  });
-  app
-    .use(router.routes())
-    .use(router.allowedMethods())
-    .use(require('koa-static')('static'));
-} else {
-  // development
+if (process.env.NODE_ENV !== 'production') {
+  const webpackConfig = require('../../webpack.config.js');
   const webpack = require('webpack');
-  const config = require('../../webpack.config.js')(process.env, {
-    mode: 'development'
-  });
-  const compiler = webpack(config);
-  koaWebpack({ compiler }).then(middleware => {
-    app.use(middleware).use(renderReactApp);
+  const compiler = webpack(webpackConfig);
+
+  koaWebpack({
+    compiler,
+    devMiddleware: {
+      logLevel: 'silent',
+      publicPath: '/dist/web',
+      writeToDisk(filePath) {
+        return /dist\/node\//.test(filePath) || /loadable-stats/.test(filePath);
+      }
+    }
+  }).then(middleware => {
+    app.use(middleware);
   });
 }
+
+const router = new Router();
+
+routes.map(route => {
+  router[route.method](route.path, renderReactApp);
+});
+
+// custom error handler routing
+app.use(async (ctx, next) => {
+  try {
+    await next();
+    const status = ctx.status || 404;
+    if (status === 404) {
+      ctx.throw(404);
+    }
+  } catch (err) {
+    ctx.status = err.status || 500;
+    if (ctx.status === 404) {
+      // TODO: update for generic client errors
+      await renderReactApp(ctx);
+    } else {
+      // TODO: update for generic server errors
+      await renderReactApp(ctx);
+    }
+  }
+});
+
+app
+  .use(router.routes())
+  .use(router.allowedMethods())
+  .use(koaStatic(path.join(__dirname, '../../public')));
 
 app.listen(PORT, () => {
   console.log(`🚀 Listening on port ${PORT}`);

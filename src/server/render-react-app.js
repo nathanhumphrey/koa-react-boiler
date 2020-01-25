@@ -1,16 +1,14 @@
+import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-
-import App from '../app/App';
-import { js } from './js'; // get hashed name from webpack
-import { css } from './css'; // get hashed from webpack
+import { ChunkExtractor } from '@loadable/server';
 
 // prepare React CDN resource URLs
 let reactJs, reactDomJs;
-// webpack plugin __PRODUCTION__ for cleaner bundles
-if (__PRODUCTION__) {
+
+if (process.env.NODE_ENV === 'production') {
   reactJs = 'https://unpkg.com/react@16/umd/react.production.min.js';
   reactDomJs = 'https://unpkg.com/react-dom@16/umd/react-dom.production.min.js';
 } else {
@@ -19,7 +17,7 @@ if (__PRODUCTION__) {
 }
 
 // component to manage the HTML document returned to browser
-const Html = ({ children, script, style, title }) => {
+const Html = ({ children, scripts, styles, links, title }) => {
   return (
     <html lang="en">
       <head>
@@ -27,13 +25,14 @@ const Html = ({ children, script, style, title }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <title>{title}</title>
-        <link rel="stylesheet" type="text/css" href={style} />
+        {links}
+        {styles}
       </head>
       <body>
         <div id="app">{children}</div>
         <script crossOrigin="true" src={reactJs} />
         <script crossOrigin="true" src={reactDomJs} />
-        <script src={script} />
+        {scripts}
       </body>
     </html>
   );
@@ -41,15 +40,10 @@ const Html = ({ children, script, style, title }) => {
 
 Html.propTypes = {
   children: PropTypes.node,
-  script: PropTypes.string,
-  style: PropTypes.string,
+  scripts: PropTypes.string,
+  styles: PropTypes.string,
+  links: PropTypes.string,
   title: PropTypes.string
-};
-
-Html.defaultProps = {
-  script: '/main.js',
-  style: '/styles.css',
-  title: 'Koa React Boilerplate - Rendered'
 };
 
 const context = {};
@@ -57,32 +51,40 @@ const context = {};
 export default ctx => {
   let renderComponent;
 
-  // webpack plugin __PRODUCTION__ for cleaner bundles
-  if (__PRODUCTION__) {
-    renderComponent = (
-      <Html script={js} style={css}>
-        <StaticRouter location={ctx.request.url} context={context}>
-          <App />
-        </StaticRouter>
-      </Html>
-    );
-  } else {
-    renderComponent = (
-      <Html>
-        <StaticRouter location={ctx.request.url} context={context}>
-          <App />
-        </StaticRouter>
-      </Html>
-    );
-  }
+  // loadable-components implementation
+  const nodeStats = path.resolve(
+    __dirname,
+    '../../public/dist/node/loadable-stats.json'
+  );
 
-  const markup = renderToString(renderComponent);
+  const webStats = path.resolve(
+    __dirname,
+    '../../public/dist/web/loadable-stats.json'
+  );
+
+  const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
+  const { default: App } = nodeExtractor.requireEntrypoint();
+  const webExtractor = new ChunkExtractor({ statsFile: webStats });
+
+  const jsx = webExtractor.collectChunks(
+    <StaticRouter location={ctx.request.url} context={context}>
+      <App />
+    </StaticRouter>
+  );
+
+  const links = webExtractor.getLinkElements(),
+    scripts = webExtractor.getScriptElements(),
+    styles = webExtractor.getStyleElements();
+
+  const props = { links, scripts, styles };
+
+  renderComponent = <Html {...props}>{jsx}</Html>;
 
   if (context.url) {
     // Somewhere a `<Redirect>` was rendered
     ctx.redirect(301, context.url);
   } else {
     // we're good, send the response
-    ctx.body = markup;
+    ctx.body = renderToString(renderComponent);
   }
 };

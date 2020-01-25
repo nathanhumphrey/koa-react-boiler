@@ -125,7 +125,5 @@ typings/
 # End of https://www.gitignore.io/api/node,macos,visualstudiocode
 
 # Application Build Directories and Files
-static/
-server/
-src/server/js.js
-src/server/css.js
+lib/
+public/

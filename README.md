@@ -10,7 +10,7 @@ Note, this project is not intended to be used in production. It was developed as
 
 - Routing ✓ (via [react-router](https://reacttraining.com/react-router/))
 - Unit testing ✓ (via [jest](https://jestjs.io/) and [enzyme](https://airbnb.io/enzyme/))
-- Code splitting (via [loadable components](https://github.com/gregberge/loadable-components))
+- Code splitting ✓ (via [loadable components](https://github.com/gregberge/loadable-components))
 - SSR route initial data loading
 
 ## License
