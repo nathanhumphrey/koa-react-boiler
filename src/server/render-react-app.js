@@ -50,8 +50,6 @@ Html.propTypes = {
 const context = {};
 
 export default ctx => {
-  // let renderComponent;
-
   // loadable-components implementation
   const nodeStats = path.resolve(
     __dirname,

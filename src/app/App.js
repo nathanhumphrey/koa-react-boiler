@@ -6,9 +6,12 @@ import loadable from '@loadable/component';
 import { routes } from './routes';
 import './app.css';
 
-// code-splitting on pages
+// code-splitting done on pages
+
+// dynamic user-defined pages
 const About = loadable(() => import('./pages/about'));
 const Home = loadable(() => import('./pages/home'));
+// required no match page
 const NoMatch = loadable(() => import('./pages/404'));
 
 const pages = { About, Home, NoMatch };

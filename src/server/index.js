@@ -1,4 +1,3 @@
-//import 'isomorphic-fetch';
 import path from 'path';
 import dotenv from 'dotenv';
 import Koa from 'koa';
