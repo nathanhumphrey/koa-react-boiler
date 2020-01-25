@@ -14,6 +14,7 @@ const { PORT = 3000 } = process.env;
 const app = new Koa();
 
 if (process.env.NODE_ENV !== 'production') {
+  // development configuration with webpack
   const getWebpack = async () => {
     return [await import('../../webpack.config.js'), await import('webpack')];
   };

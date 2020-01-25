@@ -2,6 +2,7 @@ import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
+import DocumentTitle from 'react-document-title';
 import PropTypes from 'prop-types';
 import { ChunkExtractor } from '@loadable/server';
 
@@ -40,8 +41,8 @@ const Html = ({ children, scripts, styles, links, title }) => {
 
 Html.propTypes = {
   children: PropTypes.node,
-  scripts: PropTypes.string,
-  styles: PropTypes.string,
+  scripts: PropTypes.array,
+  styles: PropTypes.array,
   links: PropTypes.string,
   title: PropTypes.string
 };
@@ -49,7 +50,7 @@ Html.propTypes = {
 const context = {};
 
 export default ctx => {
-  let renderComponent;
+  // let renderComponent;
 
   // loadable-components implementation
   const nodeStats = path.resolve(
@@ -75,15 +76,19 @@ export default ctx => {
   const scripts = webExtractor.getScriptElements(),
     styles = webExtractor.getStyleElements();
 
-  const props = { scripts, styles };
+  const props = { scripts, styles, title: '' };
 
-  renderComponent = <Html {...props}>{jsx}</Html>;
+  // now, inject proper document title
+  const markup = renderToString(<Html {...props}>{jsx}</Html>).replace(
+    /<title><\/title>/,
+    `<title>${DocumentTitle.rewind()}</title>`
+  );
 
   if (context.url) {
     // Somewhere a `<Redirect>` was rendered
     ctx.redirect(301, context.url);
   } else {
     // we're good, send the response
-    ctx.body = renderToString(renderComponent);
+    ctx.body = markup;
   }
 };

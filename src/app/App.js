@@ -1,6 +1,7 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Route, Switch } from 'react-router-dom';
+import DocumentTitle from 'react-document-title';
 import loadable from '@loadable/component';
 import { routes } from './routes';
 import './app.css';
@@ -22,7 +23,9 @@ const App = () => {
             path={route.path}
             exact={route.exact ? true : false}
           >
-            {React.createElement(pages[route.page])}
+            <DocumentTitle title={route.title}>
+              {React.createElement(pages[route.page])}
+            </DocumentTitle>
           </Route>
         ))}
         <Route key="404" path="*">
