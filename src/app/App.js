@@ -1,10 +1,16 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Route, Switch } from 'react-router-dom';
+import loadable from '@loadable/component';
 import { routes } from './routes';
-import * as pages from './pages';
-
 import './app.css';
+
+// code-splitting on pages
+const About = loadable(() => import('./pages/about'));
+const Home = loadable(() => import('./pages/home'));
+const NoMatch = loadable(() => import('./pages/404'));
+
+const pages = { About, Home, NoMatch };
 
 const App = () => {
   return (

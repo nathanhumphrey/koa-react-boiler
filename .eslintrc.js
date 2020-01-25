@@ -8,8 +8,14 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'prettier',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
+    'plugin:import/errors',
+    'plugin:import/warnings'
   ],
+  settings: {
+    'import/resolver': 'webpack'
+  },
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaFeatures: {
       jsx: true
@@ -23,7 +29,7 @@ module.exports = {
     jest: true
   },
   plugins: ['react', 'prettier'],
-  ignorePatterns: ['js.js', 'css.js', 'dist/'], // build directory for server files
+  ignorePatterns: ['lib/', 'public/'], // build directories
   rules: {
     indent: ['error', 2],
     'linebreak-style': ['warn', 'windows'],

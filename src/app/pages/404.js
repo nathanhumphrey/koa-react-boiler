@@ -18,4 +18,4 @@ const NoMatch = () => {
   );
 };
 
-export { NoMatch };
+export default NoMatch;

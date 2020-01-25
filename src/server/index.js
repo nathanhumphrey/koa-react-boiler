@@ -14,21 +14,27 @@ const { PORT = 3000 } = process.env;
 const app = new Koa();
 
 if (process.env.NODE_ENV !== 'production') {
-  const webpackConfig = require('../../webpack.config.js');
-  const webpack = require('webpack');
-  const compiler = webpack(webpackConfig);
+  const getWebpack = async () => {
+    return [await import('../../webpack.config.js'), await import('webpack')];
+  };
 
-  koaWebpack({
-    compiler,
-    devMiddleware: {
-      logLevel: 'silent',
-      publicPath: '/dist/web',
-      writeToDisk(filePath) {
-        return /dist\/node\//.test(filePath) || /loadable-stats/.test(filePath);
+  getWebpack().then(([webpackConfig, webpack]) => {
+    const compiler = webpack.default(webpackConfig.default);
+
+    koaWebpack({
+      compiler,
+      devMiddleware: {
+        logLevel: 'silent',
+        publicPath: '/dist/web',
+        writeToDisk(filePath) {
+          return (
+            /dist\/node\//.test(filePath) || /loadable-stats/.test(filePath)
+          );
+        }
       }
-    }
-  }).then(middleware => {
-    app.use(middleware);
+    }).then(middleware => {
+      app.use(middleware);
+    });
   });
 }
 

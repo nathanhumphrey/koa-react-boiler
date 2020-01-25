@@ -72,11 +72,10 @@ export default ctx => {
     </StaticRouter>
   );
 
-  const links = webExtractor.getLinkElements(),
-    scripts = webExtractor.getScriptElements(),
+  const scripts = webExtractor.getScriptElements(),
     styles = webExtractor.getStyleElements();
 
-  const props = { links, scripts, styles };
+  const props = { scripts, styles };
 
   renderComponent = <Html {...props}>{jsx}</Html>;
 
