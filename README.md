@@ -2,16 +2,16 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
-Isomporphic SSR Exploration Project - Boilerplate to get up and running quickly with Koa and React.
+Isomorphic SSR Exploration Project - Boilerplate to get up and running quickly with Koa and React.
 
 ## Limitations
 
 Note, this project is not intended to be used in production as is. It is being developed as an exploratory exercise for implementing isomorphic JavaScript applications via Koa and React. At this time, the project provides ~~only basic~~ support for server-side rendering and development of a React application served via Koa (the original purpose of the project). Future plans to fortify the project include (but are not limited to):
 
-- ~~Routing~~ ✓ (via [react-router](https://reacttraining.com/react-router/))
-- ~~Unit testing~~ ✓ (via [jest](https://jestjs.io/) and [enzyme](https://airbnb.io/enzyme/))
-- ~~Code splitting~~ ✓ (via [loadable components](https://github.com/gregberge/loadable-components))
-- SSR route initial data loading
+- ~~Routing~~ <span style="color:lightgreen">✓</span> (via [react-router](https://reacttraining.com/react-router/))
+- ~~Unit testing~~ <span style="color:lightgreen">✓</span> (via [jest](https://jestjs.io/) and [enzyme](https://airbnb.io/enzyme/))
+- ~~Code splitting~~ <span style="color:lightgreen">✓</span> (via [loadable components](https://github.com/gregberge/loadable-components))
+- ~~SSR route initial data loading~~ <span style="color:red">✗</span> I've thought about this and reviewed a few implementations. I don't think it's necessary; true, data fetching from within the react component will require a second request but only when the viewed 'page' was the initial one requested by the client. Adding the additional code to support the initial data request seems like a lot of debt to add for minimal gain.
 
 ## Installation and Execution
 

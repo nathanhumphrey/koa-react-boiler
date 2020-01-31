@@ -9,8 +9,9 @@
  * - nav - boolean to determine if the route should be included in navigation (default true)
  * - [title] - the value to use for the document.title
  * - [exact] - boolean to determine if an exact match is required (left here for developer to decide)
- * - [loadData] - if initial data are required, provide method to fetch here
  */
+
+// optional site-wide title to use in the <title> tag, remove id desired
 const siteTitle = 'Koa React App - ';
 
 const routes = [
@@ -22,8 +23,7 @@ const routes = [
     page: 'Home',
     key: '/',
     exact: true,
-    nav: true,
-    loadData: () => 'some data'
+    nav: true
   },
   {
     title: `${siteTitle} About`,

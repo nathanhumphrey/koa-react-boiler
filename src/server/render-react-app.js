@@ -47,8 +47,6 @@ Html.propTypes = {
   title: PropTypes.string
 };
 
-const context = {};
-
 export default ctx => {
   // loadable-components implementation
   const nodeStats = path.resolve(
@@ -61,9 +59,13 @@ export default ctx => {
     '../../public/dist/web/loadable-stats.json'
   );
 
+  // code splitting requirements
   const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
   const { default: App } = nodeExtractor.requireEntrypoint();
   const webExtractor = new ChunkExtractor({ statsFile: webStats });
+
+  // react-router context object
+  const context = {};
 
   const jsx = webExtractor.collectChunks(
     <StaticRouter location={ctx.request.url} context={context}>
@@ -83,10 +85,8 @@ export default ctx => {
   );
 
   if (context.url) {
-    // Somewhere a `<Redirect>` was rendered
     ctx.redirect(301, context.url);
   } else {
-    // we're good, send the response
     ctx.body = markup;
   }
 };

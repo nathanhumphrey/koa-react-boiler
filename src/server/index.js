@@ -12,8 +12,8 @@ const { PORT = 3000 } = process.env;
 
 const app = new Koa();
 
+// development configuration with webpack
 if (process.env.NODE_ENV !== 'production') {
-  // development configuration with webpack
   const getWebpack = async () => {
     return [await import('../../webpack.config.js'), await import('webpack')];
   };
@@ -40,6 +40,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const router = new Router();
 
+// use the application routes found ../app/routes.js
 routes.map(route => {
   router[route.method](route.path, renderReactApp);
 });

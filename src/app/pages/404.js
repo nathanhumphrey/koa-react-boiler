@@ -1,7 +1,17 @@
+/**
+ * @fileoverview Defines the 404 not found error page for the application.
+ */
 import React from 'react';
 import { Page } from '../components/Page';
 import { useLocation } from 'react-router-dom';
 
+/**
+ * Component for displaying a 404 not found page
+ * @example
+ * return (
+ *  <NoMatch />
+ * )
+ */
 const NoMatch = () => {
   let location = useLocation();
 
